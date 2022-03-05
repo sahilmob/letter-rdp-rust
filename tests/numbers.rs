@@ -5,15 +5,19 @@ mod test {
     fn prints_number() {
         let mut parser = init();
 
-        let result = parser.parse::<i64>(String::from("  1"));
+        let result = parser.parse(String::from("  1;"));
 
         assert_eq!(
             result,
             Program {
-                value: Literal {
-                    typ: String::from("NumericLiteral"),
-                    value: 1
-                }
+                typ: String::from("Program"),
+                body: vec![ExpressionStatement {
+                    typ: String::from("ExpressionStatement"),
+                    expression: Literal::NumericLiteral {
+                        typ: String::from("NumericLiteral"),
+                        value: 1
+                    }
+                }]
             }
         )
     }

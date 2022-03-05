@@ -1,10 +1,11 @@
 use super::nodes::*;
 use regex::Regex;
 
-const SPEC: [(&str, &str); 6] = [
+const SPEC: [(&str, &str); 7] = [
     (r"^\s+", "WHITESPACE"),
     (r"^//.*", "COMMENT"),
     (r"^/*[\s\S]*?*/.*", "COMMENT"),
+    (r"^;", ";"),
     (r"^\d+", "NUMBER"),
     (r#"^"[^"]*""#, "STRING"),
     (r#"^'[^']*'"#, "STRING"),

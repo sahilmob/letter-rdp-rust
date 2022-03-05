@@ -1,7 +1,5 @@
 use super::nodes::*;
 use super::tokenizer::Tokenizer;
-use std::fmt::Debug;
-use std::str::FromStr;
 
 pub struct Parser {
     pub string: String,
@@ -10,10 +8,7 @@ pub struct Parser {
 }
 
 impl Parser {
-    pub fn parse<T: FromStr>(&mut self, string: String) -> Program<T>
-    where
-        <T as FromStr>::Err: Debug,
-    {
+    pub fn parse(&mut self, string: String) -> Program {
         self.string = string.clone();
         self.tokenizer.init(string);
         self.lookahead = self.tokenizer.get_next_token();
@@ -21,33 +16,69 @@ impl Parser {
     }
 
     // Program
-    //  : Literal
+    //  : StatementList
     //  ;
-    fn program<T: FromStr>(&mut self) -> Program<T>
-    where
-        <T as FromStr>::Err: Debug,
-    {
+    fn program(&mut self) -> Program {
         return Program {
-            value: self.literal(),
+            typ: String::from("Program"),
+            body: self.statement_list(),
         };
+    }
+
+    // StatementList
+    // : Statement
+    // | StatementList Statement
+    // ;
+    fn statement_list(&mut self) -> Vec<ExpressionStatement> {
+        let mut statement_list = Vec::new();
+        statement_list.push(self.statement());
+
+        while !self.lookahead.is_none() {
+            statement_list.push(self.statement())
+        }
+
+        return statement_list;
+    }
+
+    // Statement
+    // : ExpressionStatement
+    // ;
+    fn statement(&mut self) -> ExpressionStatement {
+        return self.expression_statement();
+    }
+
+    // ExpressionStatement
+    // : Expression ';'
+    // ;
+    fn expression_statement(&mut self) -> ExpressionStatement {
+        let expression = self.expression();
+        self.eat(";");
+        return ExpressionStatement {
+            typ: String::from("ExpressionStatement"),
+            expression,
+        };
+    }
+
+    // Expression
+    // : Literal
+    // ;
+    fn expression(&mut self) -> Literal {
+        return self.literal();
     }
 
     // Literal
     // : NumericLiteral
     // | StringLiteral
     // :
-    fn literal<T: FromStr>(&mut self) -> Literal<T>
-    where
-        <T as FromStr>::Err: Debug,
-    {
+    fn literal(&mut self) -> Literal {
         let token = &self.lookahead;
 
         match token {
             Some(t) => {
                 if t.typ == "NUMBER" {
-                    return self.numeric_literal::<T>();
+                    return self.numeric_literal();
                 } else if t.typ == "STRING" {
-                    return self.string_literal::<T>();
+                    return self.string_literal();
                 } else {
                     panic!("Unsupported token type {}", t.typ);
                 }
@@ -61,30 +92,24 @@ impl Parser {
     // NumericLiteral
     //  : STRING
     //  ;
-    fn string_literal<T: FromStr>(&mut self) -> Literal<T>
-    where
-        <T as FromStr>::Err: Debug,
-    {
+    fn string_literal(&mut self) -> Literal {
         let token: Token = self.eat("STRING");
 
-        return Literal {
+        return Literal::StringLiteral {
             typ: String::from("StringLiteral"),
-            value: token.value.parse::<T>().unwrap(),
+            value: token.value.parse::<String>().unwrap(),
         };
     }
 
     // NumericLiteral
     //  : NUMBER
     //  ;
-    fn numeric_literal<T: FromStr>(&mut self) -> Literal<T>
-    where
-        <T as FromStr>::Err: Debug,
-    {
+    fn numeric_literal(&mut self) -> Literal {
         let token: Token = self.eat("NUMBER");
 
-        return Literal {
+        return Literal::NumericLiteral {
             typ: String::from("NumericLiteral"),
-            value: token.value.parse::<T>().unwrap(),
+            value: token.value.parse::<i64>().unwrap(),
         };
     }
 
