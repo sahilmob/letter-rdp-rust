@@ -5,11 +5,11 @@ use self::parser::Parser;
 use self::tokenizer::Tokenizer;
 pub use nodes::*;
 
-pub fn init() -> Parser {
+pub fn init<'a>() -> Parser<'a> {
     let parser = Parser {
         string: String::from(""),
         lookahead: Some(Token {
-            typ: String::from(""),
+            typ: "",
             value: String::from(""),
         }),
         tokenizer: Tokenizer {

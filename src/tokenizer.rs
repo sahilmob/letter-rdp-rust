@@ -36,7 +36,7 @@ impl Tokenizer {
         };
     }
 
-    pub fn get_next_token(&mut self) -> Option<Token> {
+    pub fn get_next_token<'a>(&mut self) -> Option<Token<'a>> {
         if !self.has_more_tokens() {
             return None;
         }
@@ -52,15 +52,12 @@ impl Tokenizer {
                     }
                     if typ == "STRING" {
                         return Some(Token {
-                            typ: String::from(typ),
+                            typ: typ,
                             value: v[1..v.len() - 1].to_string(),
                         });
                     }
 
-                    return Some(Token {
-                        typ: String::from(typ),
-                        value: v,
-                    });
+                    return Some(Token { typ: typ, value: v });
                 }
                 None => continue,
             };

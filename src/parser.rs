@@ -1,13 +1,13 @@
 use super::nodes::*;
 use super::tokenizer::Tokenizer;
 
-pub struct Parser {
+pub struct Parser<'a> {
     pub string: String,
-    pub lookahead: Option<Token>,
+    pub lookahead: Option<Token<'a>>,
     pub tokenizer: Tokenizer,
 }
 
-impl Parser {
+impl<'a> Parser<'a> {
     pub fn parse(&mut self, string: String) -> Program {
         self.string = string.clone();
         self.tokenizer.init(string);
@@ -29,7 +29,7 @@ impl Parser {
     // : Statement
     // | StatementList Statement
     // ;
-    fn statement_list<'a>(&mut self) -> Vec<ExpressionStatement<'a>> {
+    fn statement_list(&mut self) -> Vec<ExpressionStatement<'a>> {
         let mut statement_list = Vec::new();
         statement_list.push(self.statement());
 
@@ -43,14 +43,14 @@ impl Parser {
     // Statement
     // : ExpressionStatement
     // ;
-    fn statement<'a>(&mut self) -> ExpressionStatement<'a> {
+    fn statement(&mut self) -> ExpressionStatement<'a> {
         return self.expression_statement();
     }
 
     // ExpressionStatement
     // : Expression ';'
     // ;
-    fn expression_statement<'a>(&mut self) -> ExpressionStatement<'a> {
+    fn expression_statement(&mut self) -> ExpressionStatement<'a> {
         let expression = self.expression();
         self.eat(";");
         return ExpressionStatement {
@@ -62,7 +62,7 @@ impl Parser {
     // Expression
     // : Literal
     // ;
-    fn expression<'a>(&mut self) -> Literal<'a> {
+    fn expression(&mut self) -> Literal<'a> {
         return self.literal();
     }
 
@@ -70,7 +70,7 @@ impl Parser {
     // : NumericLiteral
     // | StringLiteral
     // :
-    fn literal<'a>(&mut self) -> Literal<'a> {
+    fn literal(&mut self) -> Literal<'a> {
         let token = &self.lookahead;
 
         match token {
@@ -92,7 +92,7 @@ impl Parser {
     // NumericLiteral
     //  : STRING
     //  ;
-    fn string_literal<'a>(&mut self) -> Literal<'a> {
+    fn string_literal(&mut self) -> Literal<'a> {
         let token: Token = self.eat("STRING");
 
         return Literal::StringLiteral {
@@ -104,7 +104,7 @@ impl Parser {
     // NumericLiteral
     //  : NUMBER
     //  ;
-    fn numeric_literal<'a>(&mut self) -> Literal<'a> {
+    fn numeric_literal(&mut self) -> Literal<'a> {
         let token: Token = self.eat("NUMBER");
 
         return Literal::NumericLiteral {
