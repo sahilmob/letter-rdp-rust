@@ -17,14 +17,14 @@ mod test {
             Program {
                 typ: "Program",
                 body: vec![
-                    ExpressionStatement {
+                    Statement::ExpressionStatement {
                         typ: "ExpressionStatement",
                         expression: Literal::NumericLiteral {
                             typ: "NumericLiteral",
                             value: 1
                         }
                     },
-                    ExpressionStatement {
+                    Statement::ExpressionStatement {
                         typ: "ExpressionStatement",
                         expression: Literal::StringLiteral {
                             typ: "StringLiteral",

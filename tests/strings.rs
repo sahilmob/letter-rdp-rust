@@ -12,7 +12,7 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![ExpressionStatement {
+                body: vec![Statement::ExpressionStatement {
                     typ: "ExpressionStatement",
                     expression: Literal::StringLiteral {
                         typ: "StringLiteral",
@@ -33,7 +33,7 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![ExpressionStatement {
+                body: vec![Statement::ExpressionStatement {
                     typ: "ExpressionStatement",
                     expression: Literal::StringLiteral {
                         typ: "StringLiteral",
@@ -59,7 +59,7 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![ExpressionStatement {
+                body: vec![Statement::ExpressionStatement {
                     typ: "ExpressionStatement",
                     expression: Literal::StringLiteral {
                         typ: "StringLiteral",
@@ -87,7 +87,7 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![ExpressionStatement {
+                body: vec![Statement::ExpressionStatement {
                     typ: "ExpressionStatement",
                     expression: Literal::StringLiteral {
                         typ: "StringLiteral",

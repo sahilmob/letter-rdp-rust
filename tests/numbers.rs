@@ -11,7 +11,7 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![ExpressionStatement {
+                body: vec![Statement::ExpressionStatement {
                     typ: "ExpressionStatement",
                     expression: Literal::NumericLiteral {
                         typ: "NumericLiteral",

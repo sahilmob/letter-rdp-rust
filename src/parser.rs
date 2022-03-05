@@ -26,7 +26,7 @@ impl<'a> Parser<'a> {
     fn program(&mut self) -> Program {
         return Program {
             typ: "Program",
-            body: self.statement_list(),
+            body: self.statement_list(""),
         };
     }
 
@@ -34,11 +34,11 @@ impl<'a> Parser<'a> {
     // : Statement
     // | StatementList Statement
     // ;
-    fn statement_list(&mut self) -> Vec<ExpressionStatement<'a>> {
+    fn statement_list(&mut self, stop_lookahead: &str) -> Vec<Statement<'a>> {
         let mut statement_list = Vec::new();
         statement_list.push(self.statement());
 
-        while !self.lookahead.is_none() {
+        while !self.lookahead.is_none() && self.lookahead.as_ref().unwrap().typ != stop_lookahead {
             statement_list.push(self.statement())
         }
 
@@ -47,18 +47,52 @@ impl<'a> Parser<'a> {
 
     // Statement
     // : ExpressionStatement
+    // | BlockStatement
+    // | EmptyStatement
     // ;
-    fn statement(&mut self) -> ExpressionStatement<'a> {
-        return self.expression_statement();
+    fn statement(&mut self) -> Statement<'a> {
+        match self.lookahead.as_ref().unwrap().typ {
+            ";" => self.empty_statement(),
+            "{" => self.block_statement(),
+            _ => self.expression_statement(),
+        }
+    }
+
+    // EmptyStatement
+    // : ";"
+    // ;
+    fn empty_statement(&mut self) -> Statement<'a> {
+        self.eat(";");
+        return Statement::EmptyStatement {
+            typ: "EmptyStatement",
+        };
+    }
+
+    // BlockStatement
+    // : "{" OptStatementList "}"
+    // ;
+    fn block_statement(&mut self) -> Statement<'a> {
+        self.eat("{");
+        let body = if self.lookahead.as_ref().unwrap().typ != "}" {
+            self.statement_list("}")
+        } else {
+            vec![]
+        };
+        self.eat("}");
+
+        return Statement::BlockStatement {
+            typ: "BlockStatement",
+            body,
+        };
     }
 
     // ExpressionStatement
-    // : Expression ';'
+    // : Expression ";"
     // ;
-    fn expression_statement(&mut self) -> ExpressionStatement<'a> {
+    fn expression_statement(&mut self) -> Statement<'a> {
         let expression = self.expression();
         self.eat(";");
-        return ExpressionStatement {
+        return Statement::ExpressionStatement {
             typ: "ExpressionStatement",
             expression,
         };
