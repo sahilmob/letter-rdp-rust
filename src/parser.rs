@@ -1,6 +1,7 @@
 use super::nodes::*;
 use super::tokenizer::Tokenizer;
 
+#[derive(Default, Debug)]
 pub struct Parser<'a> {
     pub string: &'a str,
     pub lookahead: Option<Token<'a>>,
@@ -8,6 +9,10 @@ pub struct Parser<'a> {
 }
 
 impl<'a> Parser<'a> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     pub fn parse(&mut self, string: &'a str) -> Program {
         self.string = string.clone();
         self.tokenizer.init(string);

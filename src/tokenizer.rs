@@ -10,12 +10,17 @@ const SPEC: [(&str, &str); 7] = [
     (r#"^"[^"]*""#, "STRING"),
     (r#"^'[^']*'"#, "STRING"),
 ];
+#[derive(Default, Debug)]
 pub struct Tokenizer<'a> {
     pub string: &'a str,
     pub cursor: u64,
 }
 
 impl<'a> Tokenizer<'a> {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
     pub fn init(&mut self, string: &'a str) {
         self.string = string;
     }
