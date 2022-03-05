@@ -40,8 +40,12 @@ impl<'a> Tokenizer<'a> {
             None => None,
         };
     }
+}
 
-    pub fn get_next_token(&mut self) -> Option<Token<'a>> {
+impl<'a> Iterator for Tokenizer<'a> {
+    type Item = Token<'a>;
+
+    fn next(&mut self) -> Option<Self::Item> {
         if !self.has_more_tokens() {
             return None;
         }
@@ -53,7 +57,7 @@ impl<'a> Tokenizer<'a> {
             match token_value {
                 Some(v) => {
                     if typ == "WHITESPACE" || typ == "COMMENT" {
-                        return self.get_next_token();
+                        return self.next();
                     }
                     return Some(Token { typ: typ, value: v });
                 }

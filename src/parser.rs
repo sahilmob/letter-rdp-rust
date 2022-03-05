@@ -16,7 +16,7 @@ impl<'a> Parser<'a> {
     pub fn parse(&mut self, string: &'a str) -> Program {
         self.string = string.clone();
         self.tokenizer.init(string);
-        self.lookahead = self.tokenizer.get_next_token();
+        self.lookahead = self.tokenizer.next();
         return self.program();
     }
 
@@ -127,7 +127,7 @@ impl<'a> Parser<'a> {
                     panic!("Unexpected token: {}, expected: {}", t.typ, token_type)
                 }
 
-                self.lookahead = self.tokenizer.get_next_token();
+                self.lookahead = self.tokenizer.next();
 
                 return t;
             }
