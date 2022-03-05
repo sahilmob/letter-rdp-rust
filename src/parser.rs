@@ -2,13 +2,13 @@ use super::nodes::*;
 use super::tokenizer::Tokenizer;
 
 pub struct Parser<'a> {
-    pub string: String,
+    pub string: &'a str,
     pub lookahead: Option<Token<'a>>,
-    pub tokenizer: Tokenizer,
+    pub tokenizer: Tokenizer<'a>,
 }
 
 impl<'a> Parser<'a> {
-    pub fn parse(&mut self, string: String) -> Program {
+    pub fn parse(&mut self, string: &'a str) -> Program {
         self.string = string.clone();
         self.tokenizer.init(string);
         self.lookahead = self.tokenizer.get_next_token();
@@ -94,10 +94,10 @@ impl<'a> Parser<'a> {
     //  ;
     fn string_literal(&mut self) -> Literal<'a> {
         let token: Token = self.eat("STRING");
-
+        let value = token.value;
         return Literal::StringLiteral {
             typ: "StringLiteral",
-            value: token.value.parse::<String>().unwrap(),
+            value: value[1..value.len() - 1].to_string(),
         };
     }
 

@@ -5,7 +5,7 @@ mod test {
     fn prints_number() {
         let mut parser = init();
 
-        let result = parser.parse(String::from("  1;"));
+        let result = parser.parse("  1;");
 
         assert_eq!(
             result,

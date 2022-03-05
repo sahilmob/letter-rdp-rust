@@ -5,12 +5,12 @@ mod test {
     fn handles_multiple_statements() {
         let mut parser = init();
 
-        let result = parser.parse(String::from(
+        let result = parser.parse(
             r##"  
         1;
         "hello";
         "##,
-        ));
+        );
 
         assert_eq!(
             result,

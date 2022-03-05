@@ -10,13 +10,13 @@ const SPEC: [(&str, &str); 7] = [
     (r#"^"[^"]*""#, "STRING"),
     (r#"^'[^']*'"#, "STRING"),
 ];
-pub struct Tokenizer {
-    pub string: String,
+pub struct Tokenizer<'a> {
+    pub string: &'a str,
     pub cursor: u64,
 }
 
-impl Tokenizer {
-    pub fn init(&mut self, string: String) {
+impl<'a> Tokenizer<'a> {
+    pub fn init(&mut self, string: &'a str) {
         self.string = string;
     }
 
@@ -36,7 +36,7 @@ impl Tokenizer {
         };
     }
 
-    pub fn get_next_token<'a>(&mut self) -> Option<Token<'a>> {
+    pub fn get_next_token(&mut self) -> Option<Token<'a>> {
         if !self.has_more_tokens() {
             return None;
         }
@@ -50,13 +50,6 @@ impl Tokenizer {
                     if typ == "WHITESPACE" || typ == "COMMENT" {
                         return self.get_next_token();
                     }
-                    if typ == "STRING" {
-                        return Some(Token {
-                            typ: typ,
-                            value: v[1..v.len() - 1].to_string(),
-                        });
-                    }
-
                     return Some(Token { typ: typ, value: v });
                 }
                 None => continue,

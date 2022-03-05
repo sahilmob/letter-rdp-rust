@@ -7,13 +7,13 @@ pub use nodes::*;
 
 pub fn init<'a>() -> Parser<'a> {
     let parser = Parser {
-        string: String::from(""),
+        string: "",
         lookahead: Some(Token {
             typ: "",
             value: String::from(""),
         }),
         tokenizer: Tokenizer {
-            string: String::from(""),
+            string: "",
             cursor: 0,
         },
     };

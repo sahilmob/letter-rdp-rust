@@ -6,7 +6,7 @@ mod test {
     fn prints_double_quotes_string() {
         let mut parser = init();
 
-        let result = parser.parse(String::from(r#""a";"#));
+        let result = parser.parse(r#""a";"#);
 
         assert_eq!(
             result,
@@ -27,7 +27,7 @@ mod test {
     fn prints_single_quotes_string() {
         let mut parser = init();
 
-        let result = parser.parse(String::from(r#"   'a';"#));
+        let result = parser.parse(r#"   'a';"#);
 
         assert_eq!(
             result,
@@ -48,12 +48,12 @@ mod test {
     fn ignores_single_line_comments() {
         let mut parser = init();
 
-        let result = parser.parse(String::from(
+        let result = parser.parse(
             r#"   
             // comment
         'a';
         "#,
-        ));
+        );
 
         assert_eq!(
             result,
@@ -74,14 +74,14 @@ mod test {
     fn ignores_multiline_comments() {
         let mut parser = init();
 
-        let result = parser.parse(String::from(
+        let result = parser.parse(
             r#"   
             /*
             *  a comment
             */
         'a';
         "#,
-        ));
+        );
 
         assert_eq!(
             result,
