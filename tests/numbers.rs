@@ -10,11 +10,11 @@ mod test {
         assert_eq!(
             result,
             Program {
-                typ: String::from("Program"),
+                typ: "Program",
                 body: vec![ExpressionStatement {
-                    typ: String::from("ExpressionStatement"),
+                    typ: "ExpressionStatement",
                     expression: Literal::NumericLiteral {
-                        typ: String::from("NumericLiteral"),
+                        typ: "NumericLiteral",
                         value: 1
                     }
                 }]

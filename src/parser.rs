@@ -20,7 +20,7 @@ impl Parser {
     //  ;
     fn program(&mut self) -> Program {
         return Program {
-            typ: String::from("Program"),
+            typ: "Program",
             body: self.statement_list(),
         };
     }
@@ -29,7 +29,7 @@ impl Parser {
     // : Statement
     // | StatementList Statement
     // ;
-    fn statement_list(&mut self) -> Vec<ExpressionStatement> {
+    fn statement_list<'a>(&mut self) -> Vec<ExpressionStatement<'a>> {
         let mut statement_list = Vec::new();
         statement_list.push(self.statement());
 
@@ -43,18 +43,18 @@ impl Parser {
     // Statement
     // : ExpressionStatement
     // ;
-    fn statement(&mut self) -> ExpressionStatement {
+    fn statement<'a>(&mut self) -> ExpressionStatement<'a> {
         return self.expression_statement();
     }
 
     // ExpressionStatement
     // : Expression ';'
     // ;
-    fn expression_statement(&mut self) -> ExpressionStatement {
+    fn expression_statement<'a>(&mut self) -> ExpressionStatement<'a> {
         let expression = self.expression();
         self.eat(";");
         return ExpressionStatement {
-            typ: String::from("ExpressionStatement"),
+            typ: "ExpressionStatement",
             expression,
         };
     }
@@ -62,7 +62,7 @@ impl Parser {
     // Expression
     // : Literal
     // ;
-    fn expression(&mut self) -> Literal {
+    fn expression<'a>(&mut self) -> Literal<'a> {
         return self.literal();
     }
 
@@ -70,7 +70,7 @@ impl Parser {
     // : NumericLiteral
     // | StringLiteral
     // :
-    fn literal(&mut self) -> Literal {
+    fn literal<'a>(&mut self) -> Literal<'a> {
         let token = &self.lookahead;
 
         match token {
@@ -92,11 +92,11 @@ impl Parser {
     // NumericLiteral
     //  : STRING
     //  ;
-    fn string_literal(&mut self) -> Literal {
+    fn string_literal<'a>(&mut self) -> Literal<'a> {
         let token: Token = self.eat("STRING");
 
         return Literal::StringLiteral {
-            typ: String::from("StringLiteral"),
+            typ: "StringLiteral",
             value: token.value.parse::<String>().unwrap(),
         };
     }
@@ -104,11 +104,11 @@ impl Parser {
     // NumericLiteral
     //  : NUMBER
     //  ;
-    fn numeric_literal(&mut self) -> Literal {
+    fn numeric_literal<'a>(&mut self) -> Literal<'a> {
         let token: Token = self.eat("NUMBER");
 
         return Literal::NumericLiteral {
-            typ: String::from("NumericLiteral"),
+            typ: "NumericLiteral",
             value: token.value.parse::<i64>().unwrap(),
         };
     }

@@ -4,15 +4,15 @@
 // }
 
 #[derive(Debug, PartialEq)]
-pub enum Literal {
-    NumericLiteral { typ: String, value: i64 },
-    StringLiteral { typ: String, value: String },
+pub enum Literal<'a> {
+    NumericLiteral { typ: &'a str, value: i64 },
+    StringLiteral { typ: &'a str, value: String },
 }
 
 #[derive(Debug, PartialEq)]
-pub struct Program {
-    pub typ: String,
-    pub body: Vec<ExpressionStatement>,
+pub struct Program<'a> {
+    pub typ: &'a str,
+    pub body: Vec<ExpressionStatement<'a>>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -22,7 +22,7 @@ pub struct Token {
 }
 
 #[derive(Debug, PartialEq)]
-pub struct ExpressionStatement {
-    pub typ: String,
-    pub expression: Literal,
+pub struct ExpressionStatement<'a> {
+    pub typ: &'a str,
+    pub expression: Literal<'a>,
 }
