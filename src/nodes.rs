@@ -1,3 +1,9 @@
+#[derive(Debug, Clone, PartialEq)]
+pub struct Token<'a> {
+    pub typ: &'a str,
+    pub value: String,
+}
+
 #[derive(Debug, PartialEq)]
 pub struct Program<'a> {
     pub typ: &'a str,
@@ -5,34 +11,51 @@ pub struct Program<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct Token<'a> {
-    pub typ: &'a str,
-    pub value: String,
-}
-
-#[derive(Debug, Clone, PartialEq)]
 pub enum Statement<'a> {
-    ExpressionStatement {
-        typ: &'a str,
-        expression: Literal<'a>,
-    },
-    BlockStatement {
-        typ: &'a str,
-        body: Vec<Statement<'a>>,
-    },
-    EmptyStatement {
-        typ: &'a str,
-    },
+    ExpressionStatement(ExpressionStatement<'a>),
+    BlockStatement(BlockStatement<'a>),
+    EmptyStatement { typ: &'a str },
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub struct ExpressionStatement<'a> {
     pub typ: &'a str,
-    pub expression: Literal<'a>,
+    pub expression: Expression<'a>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct BlockStatement<'a> {
+    pub typ: &'a str,
+    pub body: Vec<Statement<'a>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Expression<'a> {
+    Literal(Literal<'a>),
+    BinaryExpression(BinaryExpression<'a>),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct BinaryExpression<'a> {
+    pub typ: &'a str,
+    pub operator: String,
+    pub left: Box<Expression<'a>>,
+    pub right: Box<Expression<'a>>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Literal<'a> {
-    NumericLiteral { typ: &'a str, value: i64 },
-    StringLiteral { typ: &'a str, value: String },
+    NumericLiteral(NumericLiteral<'a>),
+    StringLiteral(StringLiteral<'a>),
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct NumericLiteral<'a> {
+    pub typ: &'a str,
+    pub value: i64,
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct StringLiteral<'a> {
+    pub typ: &'a str,
+    pub value: String,
 }

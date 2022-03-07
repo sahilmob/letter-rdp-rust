@@ -12,13 +12,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
+                body: vec![Statement::ExpressionStatement(ExpressionStatement {
                     typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
+                    expression: Expression::Literal(Literal::StringLiteral(StringLiteral {
                         typ: "StringLiteral",
                         value: String::from("a")
-                    }
-                }]
+                    }))
+                })]
             }
         )
     }
@@ -33,13 +33,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
+                body: vec![Statement::ExpressionStatement(ExpressionStatement {
                     typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
+                    expression: Expression::Literal(Literal::StringLiteral(StringLiteral {
                         typ: "StringLiteral",
                         value: String::from("a")
-                    }
-                }]
+                    }))
+                })]
             }
         )
     }
@@ -59,13 +59,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
+                body: vec![Statement::ExpressionStatement(ExpressionStatement {
                     typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
+                    expression: Expression::Literal(Literal::StringLiteral(StringLiteral {
                         typ: "StringLiteral",
                         value: String::from("a")
-                    }
-                }]
+                    }))
+                })]
             }
         )
     }
@@ -87,13 +87,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
+                body: vec![Statement::ExpressionStatement(ExpressionStatement {
                     typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
+                    expression: Expression::Literal(Literal::StringLiteral(StringLiteral {
                         typ: "StringLiteral",
                         value: String::from("a")
-                    }
-                }]
+                    }))
+                })]
             }
         )
     }

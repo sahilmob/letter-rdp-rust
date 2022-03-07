@@ -80,10 +80,10 @@ impl<'a> Parser<'a> {
         };
         self.eat("}");
 
-        return Statement::BlockStatement {
+        return Statement::BlockStatement(BlockStatement {
             typ: "BlockStatement",
             body,
-        };
+        });
     }
 
     // ExpressionStatement
@@ -92,24 +92,115 @@ impl<'a> Parser<'a> {
     fn expression_statement(&mut self) -> Statement<'a> {
         let expression = self.expression();
         self.eat(";");
-        return Statement::ExpressionStatement {
+        return Statement::ExpressionStatement(ExpressionStatement {
             typ: "ExpressionStatement",
             expression,
-        };
+        });
     }
 
     // Expression
     // : Literal
     // ;
-    fn expression(&mut self) -> Literal<'a> {
-        return self.literal();
+    fn expression(&mut self) -> Expression<'a> {
+        return self.additive_expression();
+    }
+
+    // AdditiveExpression
+    // : MultiplicativeExpression
+    // | AdditiveExpression ADDITIVE_OPERATOR Literal
+    // ;
+    fn additive_expression(&mut self) -> Expression<'a> {
+        let mut left = self.multiplicative_expression();
+
+        while self.lookahead.as_ref().unwrap().typ == "ADDITIVE_OPERATOR" {
+            let operator = self.eat("ADDITIVE_OPERATOR").value;
+            let right = self.multiplicative_expression();
+
+            left = Expression::BinaryExpression(BinaryExpression {
+                typ: "BinaryExpression",
+                operator: operator,
+                left: Box::new(left),
+                right: Box::new(right),
+            });
+        }
+
+        return left;
+    }
+
+    // MultiplicativeExpression
+    // : PrimaryExpression
+    // | MultiplicativeExpression MULTIPLICATIVE_OPERATOR PrimaryExpression
+    // ;
+    fn multiplicative_expression(&mut self) -> Expression<'a> {
+        let mut left = self.primary_expression();
+
+        while self.lookahead.as_ref().unwrap().typ == "MULTIPLICATIVE_OPERATOR" {
+            let operator = self.eat("MULTIPLICATIVE_OPERATOR").value;
+            let right = self.primary_expression();
+
+            left = Expression::BinaryExpression(BinaryExpression {
+                typ: "BinaryExpression",
+                operator: operator,
+                left: Box::new(left),
+                right: Box::new(right),
+            });
+        }
+
+        return left;
+    }
+
+    // // Generic binary expression
+    // fn _binary_expression(&self, builder_name: &str, operator_token: &str) {
+    //     let mut left = self.[builder_name]();
+
+    //     while self.lookahead.as_ref().unwrap().typ == "MULTIPLICATIVE_OPERATOR" {
+    //         let operator = self.eat("MULTIPLICATIVE_OPERATOR").value;
+    //         let right = self.primary_expression();
+
+    //         left = Expression::BinaryExpression(BinaryExpression {
+    //             typ: "BinaryExpression",
+    //             operator: operator,
+    //             left: Box::new(left),
+    //             right: Box::new(right),
+    //         });
+    //     }
+
+    //     return left;
+    // }
+
+    //  PrimaryExpression
+    // : Literal
+    // ;
+    fn primary_expression(&mut self) -> Expression<'a> {
+        let token = &self.lookahead;
+        match token {
+            Some(t) => {
+                if t.typ == "(" {
+                    return self.parenthesized_expression();
+                } else {
+                    return self.literal();
+                }
+            }
+            None => panic!("Unexpected primary expression"),
+        }
+    }
+
+    // ParenthesizedExpression
+    // "(" Expression ")"
+    // ;
+    fn parenthesized_expression(&mut self) -> Expression<'a> {
+        self.eat("(");
+        let expression = self.expression();
+        self.eat(")");
+
+        return expression;
     }
 
     // Literal
     // : NumericLiteral
     // | StringLiteral
     // :
-    fn literal(&mut self) -> Literal<'a> {
+    fn literal(&mut self) -> Expression<'a> {
         let token = &self.lookahead;
 
         match token {
@@ -131,28 +222,28 @@ impl<'a> Parser<'a> {
     // NumericLiteral
     //  : STRING
     //  ;
-    fn string_literal(&mut self) -> Literal<'a> {
+    fn string_literal(&mut self) -> Expression<'a> {
         let token: Token = self.eat("STRING");
         let value = token.value;
-        return Literal::StringLiteral {
+        return Expression::Literal(Literal::StringLiteral(StringLiteral {
             typ: "StringLiteral",
             value: value[1..value.len() - 1].to_string(),
-        };
+        }));
     }
 
     // NumericLiteral
     //  : NUMBER
     //  ;
-    fn numeric_literal(&mut self) -> Literal<'a> {
+    fn numeric_literal(&mut self) -> Expression<'a> {
         let token: Token = self.eat("NUMBER");
 
-        return Literal::NumericLiteral {
+        return Expression::Literal(Literal::NumericLiteral(NumericLiteral {
             typ: "NumericLiteral",
             value: token.value.parse::<i64>().unwrap(),
-        };
+        }));
     }
 
-    fn eat(&mut self, token_type: &str) -> Token {
+    fn eat(&mut self, token_type: &str) -> Token<'a> {
         let token: Option<Token> = self.lookahead.clone();
         match token {
             None => panic!("Unexpected end of input, expected: {}", token_type),

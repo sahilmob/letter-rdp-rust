@@ -17,25 +17,29 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::BlockStatement {
+                body: vec![Statement::BlockStatement(BlockStatement {
                     typ: "BlockStatement",
                     body: vec![
-                        Statement::ExpressionStatement {
+                        Statement::ExpressionStatement(ExpressionStatement {
                             typ: "ExpressionStatement",
-                            expression: Literal::StringLiteral {
-                                typ: "StringLiteral",
-                                value: String::from("hello")
-                            }
-                        },
-                        Statement::ExpressionStatement {
+                            expression: Expression::Literal(Literal::StringLiteral(
+                                StringLiteral {
+                                    typ: "StringLiteral",
+                                    value: String::from("hello")
+                                }
+                            ))
+                        }),
+                        Statement::ExpressionStatement(ExpressionStatement {
                             typ: "ExpressionStatement",
-                            expression: Literal::NumericLiteral {
-                                typ: "NumericLiteral",
-                                value: 42
-                            }
-                        }
+                            expression: Expression::Literal(Literal::NumericLiteral(
+                                NumericLiteral {
+                                    typ: "NumericLiteral",
+                                    value: 42
+                                }
+                            ))
+                        })
                     ]
-                }]
+                })]
             }
         )
     }
@@ -50,10 +54,10 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::BlockStatement {
+                body: vec![Statement::BlockStatement(BlockStatement {
                     typ: "BlockStatement",
                     body: vec![]
-                }]
+                })]
             }
         )
     }
@@ -77,28 +81,32 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::BlockStatement {
+                body: vec![Statement::BlockStatement(BlockStatement {
                     typ: "BlockStatement",
-                    body: vec![Statement::BlockStatement {
+                    body: vec![Statement::BlockStatement(BlockStatement {
                         typ: "BlockStatement",
                         body: vec![
-                            Statement::ExpressionStatement {
+                            Statement::ExpressionStatement(ExpressionStatement {
                                 typ: "ExpressionStatement",
-                                expression: Literal::StringLiteral {
-                                    typ: "StringLiteral",
-                                    value: String::from("hello")
-                                }
-                            },
-                            Statement::ExpressionStatement {
+                                expression: Expression::Literal(Literal::StringLiteral(
+                                    StringLiteral {
+                                        typ: "StringLiteral",
+                                        value: String::from("hello")
+                                    }
+                                ))
+                            }),
+                            Statement::ExpressionStatement(ExpressionStatement {
                                 typ: "ExpressionStatement",
-                                expression: Literal::NumericLiteral {
-                                    typ: "NumericLiteral",
-                                    value: 42
-                                }
-                            }
+                                expression: Expression::Literal(Literal::NumericLiteral(
+                                    NumericLiteral {
+                                        typ: "NumericLiteral",
+                                        value: 42
+                                    }
+                                ))
+                            })
                         ]
-                    }]
-                }]
+                    })]
+                })]
             }
         )
     }
