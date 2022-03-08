@@ -11,9 +11,9 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::EmptyStatement {
-                    typ: "EmptyStatement",
-                }]
+                body: vec![Box::new(EmptyStatement {
+                    typ: String::from("EmptyStatement1"),
+                })]
             }
         )
     }

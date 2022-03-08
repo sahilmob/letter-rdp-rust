@@ -11,13 +11,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
-                    typ: "ExpressionStatement",
-                    expression: Literal::NumericLiteral {
-                        typ: "NumericLiteral",
+                body: vec![Box::new(ExpressionStatement {
+                    typ: String::from("ExpressionStatement"),
+                    expression: Box::new(NumericLiteral {
+                        typ: String::from("NumericLiteral"),
                         value: 1
-                    }
-                }]
+                    })
+                })]
             }
         )
     }

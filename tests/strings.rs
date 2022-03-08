@@ -12,13 +12,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
-                    typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
-                        typ: "StringLiteral",
+                body: vec![Box::new(ExpressionStatement {
+                    typ: String::from("ExpressionStatement"),
+                    expression: Box::new(StringLiteral {
+                        typ: String::from("StringLiteral"),
                         value: String::from("a")
-                    }
-                }]
+                    })
+                })]
             }
         )
     }
@@ -33,13 +33,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
-                    typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
-                        typ: "StringLiteral",
+                body: vec![Box::new(ExpressionStatement {
+                    typ: String::from("ExpressionStatement"),
+                    expression: Box::new(StringLiteral {
+                        typ: String::from("StringLiteral"),
                         value: String::from("a")
-                    }
-                }]
+                    })
+                })]
             }
         )
     }
@@ -59,13 +59,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
-                    typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
-                        typ: "StringLiteral",
+                body: vec![Box::new(ExpressionStatement {
+                    typ: String::from("ExpressionStatement"),
+                    expression: Box::new(StringLiteral {
+                        typ: String::from("StringLiteral"),
                         value: String::from("a")
-                    }
-                }]
+                    })
+                })]
             }
         )
     }
@@ -87,13 +87,13 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::ExpressionStatement {
-                    typ: "ExpressionStatement",
-                    expression: Literal::StringLiteral {
-                        typ: "StringLiteral",
-                        value: String::from("a")
-                    }
-                }]
+                body: vec![Box::new(ExpressionStatement {
+                    typ: String::from("ExpressionStatement"),
+                    expression: Box::new(StringLiteral {
+                        typ: String::from("StringLiteral"),
+                        value: String::from("a"),
+                    }),
+                })],
             }
         )
     }

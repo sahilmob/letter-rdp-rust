@@ -34,7 +34,7 @@ impl<'a> Parser<'a> {
     // : Statement
     // | StatementList Statement
     // ;
-    fn statement_list(&mut self, stop_lookahead: &str) -> Vec<Statement<'a>> {
+    fn statement_list(&mut self, stop_lookahead: &str) -> Vec<Box<dyn StatementT + 'static>> {
         let mut statement_list = Vec::new();
         statement_list.push(self.statement());
 
@@ -50,7 +50,7 @@ impl<'a> Parser<'a> {
     // | BlockStatement
     // | EmptyStatement
     // ;
-    fn statement(&mut self) -> Statement<'a> {
+    fn statement(&mut self) -> Box<dyn StatementT> {
         match self.lookahead.as_ref().unwrap().typ {
             ";" => self.empty_statement(),
             "{" => self.block_statement(),
@@ -61,17 +61,17 @@ impl<'a> Parser<'a> {
     // EmptyStatement
     // : ";"
     // ;
-    fn empty_statement(&mut self) -> Statement<'a> {
+    fn empty_statement(&mut self) -> Box<dyn StatementT + 'static> {
         self.eat(";");
-        return Statement::EmptyStatement {
-            typ: "EmptyStatement",
-        };
+        return Box::new(EmptyStatement {
+            typ: String::from("EmptyStatement"),
+        });
     }
 
     // BlockStatement
     // : "{" OptStatementList "}"
     // ;
-    fn block_statement(&mut self) -> Statement<'a> {
+    fn block_statement(&mut self) -> Box<dyn StatementT + 'static> {
         self.eat("{");
         let body = if self.lookahead.as_ref().unwrap().typ != "}" {
             self.statement_list("}")
@@ -80,28 +80,28 @@ impl<'a> Parser<'a> {
         };
         self.eat("}");
 
-        return Statement::BlockStatement {
-            typ: "BlockStatement",
+        return Box::new(BlockStatement {
+            typ: String::from("BlockStatement"),
             body,
-        };
+        });
     }
 
     // ExpressionStatement
     // : Expression ";"
     // ;
-    fn expression_statement(&mut self) -> Statement<'a> {
+    fn expression_statement(&mut self) -> Box<dyn StatementT + 'static> {
         let expression = self.expression();
         self.eat(";");
-        return Statement::ExpressionStatement {
-            typ: "ExpressionStatement",
+        return Box::new(ExpressionStatement {
+            typ: String::from("ExpressionStatement"),
             expression,
-        };
+        });
     }
 
     // Expression
     // : Literal
     // ;
-    fn expression(&mut self) -> Literal<'a> {
+    fn expression(&mut self) -> Box<dyn LiteralT> {
         return self.literal();
     }
 
@@ -109,7 +109,7 @@ impl<'a> Parser<'a> {
     // : NumericLiteral
     // | StringLiteral
     // :
-    fn literal(&mut self) -> Literal<'a> {
+    fn literal(&mut self) -> Box<dyn LiteralT> {
         let token = &self.lookahead;
 
         match token {
@@ -131,25 +131,25 @@ impl<'a> Parser<'a> {
     // NumericLiteral
     //  : STRING
     //  ;
-    fn string_literal(&mut self) -> Literal<'a> {
+    fn string_literal(&mut self) -> Box<dyn LiteralT + 'static> {
         let token: Token = self.eat("STRING");
         let value = token.value;
-        return Literal::StringLiteral {
-            typ: "StringLiteral",
+        return Box::new(StringLiteral {
+            typ: String::from("StringLiteral"),
             value: value[1..value.len() - 1].to_string(),
-        };
+        });
     }
 
     // NumericLiteral
     //  : NUMBER
     //  ;
-    fn numeric_literal(&mut self) -> Literal<'a> {
+    fn numeric_literal(&mut self) -> Box<dyn LiteralT + 'static> {
         let token: Token = self.eat("NUMBER");
 
-        return Literal::NumericLiteral {
-            typ: "NumericLiteral",
+        return Box::new(NumericLiteral {
+            typ: String::from("NumericLiteral"),
             value: token.value.parse::<i64>().unwrap(),
-        };
+        });
     }
 
     fn eat(&mut self, token_type: &str) -> Token {

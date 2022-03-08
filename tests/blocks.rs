@@ -17,25 +17,25 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::BlockStatement {
-                    typ: "BlockStatement",
+                body: vec![Box::new(BlockStatement {
+                    typ: String::from("BlockStatement"),
                     body: vec![
-                        Statement::ExpressionStatement {
-                            typ: "ExpressionStatement",
-                            expression: Literal::StringLiteral {
-                                typ: "StringLiteral",
+                        Box::new(ExpressionStatement {
+                            typ: String::from("ExpressionStatement"),
+                            expression: Box::new(StringLiteral {
+                                typ: String::from("StringLiteral"),
                                 value: String::from("hello")
-                            }
-                        },
-                        Statement::ExpressionStatement {
-                            typ: "ExpressionStatement",
-                            expression: Literal::NumericLiteral {
-                                typ: "NumericLiteral",
+                            })
+                        }),
+                        Box::new(ExpressionStatement {
+                            typ: String::from("ExpressionStatement"),
+                            expression: Box::new(NumericLiteral {
+                                typ: String::from("NumericLiteral"),
                                 value: 42
-                            }
-                        }
+                            })
+                        })
                     ]
-                }]
+                })]
             }
         )
     }
@@ -50,10 +50,10 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::BlockStatement {
-                    typ: "BlockStatement",
+                body: vec![Box::new(BlockStatement {
+                    typ: String::from("BlockStatement"),
                     body: vec![]
-                }]
+                })]
             }
         )
     }
@@ -77,28 +77,28 @@ mod test {
             result,
             Program {
                 typ: "Program",
-                body: vec![Statement::BlockStatement {
-                    typ: "BlockStatement",
-                    body: vec![Statement::BlockStatement {
-                        typ: "BlockStatement",
+                body: vec![Box::new(BlockStatement {
+                    typ: String::from("BlockStatement"),
+                    body: vec![Box::new(BlockStatement {
+                        typ: String::from("BlockStatement"),
                         body: vec![
-                            Statement::ExpressionStatement {
-                                typ: "ExpressionStatement",
-                                expression: Literal::StringLiteral {
-                                    typ: "StringLiteral",
+                            Box::new(ExpressionStatement {
+                                typ: String::from("ExpressionStatement"),
+                                expression: Box::new(StringLiteral {
+                                    typ: String::from("StringLiteral"),
                                     value: String::from("hello")
-                                }
-                            },
-                            Statement::ExpressionStatement {
-                                typ: "ExpressionStatement",
-                                expression: Literal::NumericLiteral {
-                                    typ: "NumericLiteral",
+                                })
+                            }),
+                            Box::new(ExpressionStatement {
+                                typ: String::from("ExpressionStatement"),
+                                expression: Box::new(NumericLiteral {
+                                    typ: String::from("NumericLiteral"),
                                     value: 42
-                                }
-                            }
+                                })
+                            })
                         ]
-                    }]
-                }]
+                    })]
+                })]
             }
         )
     }

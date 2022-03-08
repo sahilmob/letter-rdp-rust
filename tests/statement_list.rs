@@ -17,20 +17,20 @@ mod test {
             Program {
                 typ: "Program",
                 body: vec![
-                    Statement::ExpressionStatement {
-                        typ: "ExpressionStatement",
-                        expression: Literal::NumericLiteral {
-                            typ: "NumericLiteral",
+                    Box::new(ExpressionStatement {
+                        typ: String::from("ExpressionStatement"),
+                        expression: Box::new(NumericLiteral {
+                            typ: String::from("NumericLiteral"),
                             value: 1
-                        }
-                    },
-                    Statement::ExpressionStatement {
-                        typ: "ExpressionStatement",
-                        expression: Literal::StringLiteral {
-                            typ: "StringLiteral",
+                        })
+                    }),
+                    Box::new(ExpressionStatement {
+                        typ: String::from("ExpressionStatement"),
+                        expression: Box::new(StringLiteral {
+                            typ: String::from("StringLiteral"),
                             value: String::from("hello")
-                        }
-                    }
+                        })
+                    })
                 ]
             }
         )
