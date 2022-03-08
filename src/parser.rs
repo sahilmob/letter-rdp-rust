@@ -99,10 +99,75 @@ impl<'a> Parser<'a> {
     }
 
     // Expression
-    // : Literal
+    // : AssignmentExpression
     // ;
     fn expression(&mut self) -> Expression<'a> {
-        return self.additive_expression();
+        return self.assignment_expression();
+    }
+
+    // AssignmentExpression
+    // : AdditiveExpression
+    // | LeftHandSideExpression AssignmentOperator AssignmentExpression
+    // ;
+    fn assignment_expression(&mut self) -> Expression<'a> {
+        let left = self.additive_expression();
+
+        if !self.is_assignment_operator(self.lookahead.as_ref().unwrap().typ) {
+            return left;
+        }
+
+        return Expression::AssignmentExpression(AssignmentExpression {
+            typ: "AssignmentExpression",
+            operator: self.assignment_operator().value,
+            left: self.check_valid_assignment_target(left),
+            right: self.assignment_expression(),
+        });
+    }
+    fn check_valid_assignment_target(&self, node: Expression<'a>) -> Expression<'a> {
+        match node {
+            Expression::LeftHandSideExpression => {
+                return LeftHandSideExpression::Identifier(Identifier {
+                    typ: "Identifier",
+                    name: node.name,
+                })
+            }
+            _ => panic!("Invalid left-hand side in assignment expression"),
+        }
+    }
+
+    // LeftHandSideExpression
+    // : Identifier
+    // ;
+    fn LeftHandSideExpression(&self) -> Expression<'a> {
+        return self.identifier();
+    }
+
+    // Identifier
+    // : IDENTIFIER
+    // ;
+    fn identifier(&self) -> Expression<'a> {
+        let name = self.eat("IDENTIFIER").value;
+        return Expression::LeftHandSideExpression({
+            LeftHandSideExpression {
+                typ: "Identifier",
+                name: &name,
+            }
+        });
+    }
+
+    fn is_assignment_operator(&self, token_type: &str) -> bool {
+        return token_type == "SIMPLE_ASSIGN" || token_type == "COMPLEX_ASSIGN";
+    }
+
+    // AssignmentOperator
+    // : SIMPLE_ASSIGN
+    // | COMPLEX_ASSIGN
+    // ;
+    fn assignment_operator(&self) -> Token {
+        if self.lookahead.unwrap().typ == "SIMPLE_ASSIGN" {
+            return self.eat("SIMPLE_ASSIGN");
+        }
+        return self.eat("COMPLEX_ASSIGN");
     }
 
     // AdditiveExpression
@@ -170,19 +235,28 @@ impl<'a> Parser<'a> {
 
     //  PrimaryExpression
     // : Literal
+    // ; ParenthesizedExpression
+    // ; LeftHandSideExpression
     // ;
     fn primary_expression(&mut self) -> Expression<'a> {
         let token = &self.lookahead;
+        if self.is_literal(self.lookahead.unwrap().typ) {
+            return self.literal();
+        }
         match token {
             Some(t) => {
                 if t.typ == "(" {
                     return self.parenthesized_expression();
                 } else {
-                    return self.literal();
+                    return self.LeftHandSideExpression();
                 }
             }
             None => panic!("Unexpected primary expression"),
         }
+    }
+
+    fn is_literal(&self, token_type: &str) -> bool {
+        return token_type == "NUMBER" || token_type == "STRING";
     }
 
     // ParenthesizedExpression
