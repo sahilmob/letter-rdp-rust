@@ -34,7 +34,7 @@ pub enum Expression<'a> {
     Literal(Literal<'a>),
     BinaryExpression(BinaryExpression<'a>),
     AssignmentExpression(AssignmentExpression<'a>),
-    LeftHandSideExpression(LeftHandSideExpression<'a>),
+    Identifier(Identifier<'a>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

@@ -120,17 +120,15 @@ impl<'a> Parser<'a> {
             typ: "AssignmentExpression",
             operator: self.assignment_operator().value,
             left: self.check_valid_assignment_target(left),
-            right: self.assignment_expression(),
+            right: Box::new(self.assignment_expression()),
         });
     }
-    fn check_valid_assignment_target(&self, node: Expression<'a>) -> Expression<'a> {
+    fn check_valid_assignment_target(&self, node: Expression<'a>) -> Identifier<'a> {
         match node {
-            Expression::LeftHandSideExpression => {
-                return LeftHandSideExpression::Identifier(Identifier {
-                    typ: "Identifier",
-                    name: node.name,
-                })
-            }
+            Expression::Identifier(_) => Identifier {
+                typ: "Identifier",
+                name: node.name,
+            },
             _ => panic!("Invalid left-hand side in assignment expression"),
         }
     }
@@ -147,8 +145,8 @@ impl<'a> Parser<'a> {
     // ;
     fn identifier(&self) -> Expression<'a> {
         let name = self.eat("IDENTIFIER").value;
-        return Expression::LeftHandSideExpression({
-            LeftHandSideExpression {
+        return Expression::Identifier({
+            Identifier {
                 typ: "Identifier",
                 name: &name,
             }
