@@ -34,13 +34,12 @@ pub enum Expression<'a> {
     Literal(Literal<'a>),
     BinaryExpression(BinaryExpression<'a>),
     AssignmentExpression(AssignmentExpression<'a>),
-    Identifier(Identifier<'a>),
+    LeftHandSideExpression(LeftHandSideExpression<'a>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
-pub struct LeftHandSideExpression<'a> {
-    pub typ: &'a str,
-    pub name: &'a str,
+pub enum LeftHandSideExpression<'a> {
+    Identifier(Identifier<'a>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -68,7 +67,7 @@ pub struct AssignmentExpression<'a> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Identifier<'a> {
     pub typ: &'a str,
-    pub name: &'a str,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -81,7 +80,3 @@ pub struct StringLiteral<'a> {
     pub typ: &'a str,
     pub value: String,
 }
-
-trait A {}
-trait C: A {}
-trait B: C {}
