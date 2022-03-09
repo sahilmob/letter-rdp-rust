@@ -125,9 +125,14 @@ impl<'a> Parser<'a> {
     }
     fn check_valid_assignment_target(&self, node: Expression<'a>) -> Identifier<'a> {
         match node {
-            Expression::Identifier(_) => Identifier {
-                typ: "Identifier",
-                name: node.name,
+            Expression::Identifier(a) => {
+                println!("-------------------------------------");
+                println!("{}",&a.name);
+                println!("-------------------------------------");
+                return Identifier {
+                    typ: "Identifier",
+                    name: "node.name".to_string(),
+                }
             },
             _ => panic!("Invalid left-hand side in assignment expression"),
         }
@@ -136,19 +141,19 @@ impl<'a> Parser<'a> {
     // LeftHandSideExpression
     // : Identifier
     // ;
-    fn LeftHandSideExpression(&self) -> Expression<'a> {
+    fn left_hand_side_expression(&mut self) -> Expression<'a> {
         return self.identifier();
     }
 
     // Identifier
     // : IDENTIFIER
     // ;
-    fn identifier(&self) -> Expression<'a> {
+    fn identifier(&mut self) -> Expression<'a> {
         let name = self.eat("IDENTIFIER").value;
         return Expression::Identifier({
             Identifier {
                 typ: "Identifier",
-                name: &name,
+                name: String::from(name),
             }
         });
     }
@@ -161,8 +166,8 @@ impl<'a> Parser<'a> {
     // : SIMPLE_ASSIGN
     // | COMPLEX_ASSIGN
     // ;
-    fn assignment_operator(&self) -> Token {
-        if self.lookahead.unwrap().typ == "SIMPLE_ASSIGN" {
+    fn assignment_operator(&mut self) -> Token {
+        if self.lookahead.clone().unwrap().typ == "SIMPLE_ASSIGN" {
             return self.eat("SIMPLE_ASSIGN");
         }
         return self.eat("COMPLEX_ASSIGN");
@@ -238,7 +243,7 @@ impl<'a> Parser<'a> {
     // ;
     fn primary_expression(&mut self) -> Expression<'a> {
         let token = &self.lookahead;
-        if self.is_literal(self.lookahead.unwrap().typ) {
+        if self.is_literal(self.lookahead.clone().unwrap().typ) {
             return self.literal();
         }
         match token {
@@ -246,7 +251,7 @@ impl<'a> Parser<'a> {
                 if t.typ == "(" {
                     return self.parenthesized_expression();
                 } else {
-                    return self.LeftHandSideExpression();
+                    return self.left_hand_side_expression();
                 }
             }
             None => panic!("Unexpected primary expression"),

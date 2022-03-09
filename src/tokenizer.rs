@@ -12,7 +12,7 @@ const SPEC: [(&str, &str); 17] = [
     (r"^\)", ")"),
     (r"^w+", "IDENTIFIER"),
     (r"^=", "SIMPLE_ASSIGN"),
-    (r"^[\*\/\+\-]=", "COMPLEX_ASSIGN"),
+    (r"^[\*/\+\-]=", "COMPLEX_ASSIGN"),
     (r"^w+", "IDENTIFIER"),
     (r"^[+\-]", "ADDITIVE_OPERATOR"),
     (r"^[*\\/]", "MULTIPLICATIVE_OPERATOR"),

@@ -68,7 +68,7 @@ pub struct AssignmentExpression<'a> {
 #[derive(Debug, Clone, PartialEq)]
 pub struct Identifier<'a> {
     pub typ: &'a str,
-    pub name: &'a str,
+    pub name: String,
 }
 
 #[derive(Debug, Clone, PartialEq)]
