@@ -49,6 +49,7 @@ impl<'a> Parser<'a> {
     // : ExpressionStatement
     // | BlockStatement
     // | EmptyStatement
+    // | EmptyStatement
     // ;
     fn statement(&mut self) -> Statement<'a> {
         match self.lookahead.as_ref().unwrap().typ {

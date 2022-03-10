@@ -14,7 +14,20 @@ pub struct Program<'a> {
 pub enum Statement<'a> {
     ExpressionStatement(ExpressionStatement<'a>),
     BlockStatement(BlockStatement<'a>),
+    VariableStatement(VariableStatement<'a>),
     EmptyStatement { typ: &'a str },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct VariableStatement<'a> {
+    pub typ: &'a str,
+    pub declarations: Vec<VariableDeclaration<'a>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct VariableDeclaration<'a> {
+    pub id: Identifier<'a>,
+    pub init: Option<Expression<'a>>,
 }
 
 #[derive(Debug, Clone, PartialEq)]
