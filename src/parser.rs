@@ -204,10 +204,8 @@ impl<'a> Parser<'a> {
     // LeftHandSideExpression
     // : Identifier
     // ;
-    fn left_hand_side_expression(&mut self) -> Expression<'a> {
-        return Expression::LeftHandSideExpression(LeftHandSideExpression::Identifier(
-            self.identifier(),
-        ));
+    fn left_hand_side_expression(&mut self) -> LeftHandSideExpression<'a> {
+        return LeftHandSideExpression::Identifier(self.identifier());
     }
 
     // Identifier
@@ -295,7 +293,7 @@ impl<'a> Parser<'a> {
                 if t.typ == "(" {
                     return self.parenthesized_expression();
                 } else {
-                    return self.left_hand_side_expression();
+                    return Expression::LeftHandSideExpression(self.left_hand_side_expression());
                 }
             }
             None => panic!("Unexpected primary expression"),
