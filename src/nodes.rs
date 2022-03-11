@@ -25,9 +25,16 @@ pub struct VariableStatement<'a> {
 }
 
 #[derive(Debug, Clone, PartialEq)]
+pub enum VariableInitializer<'a> {
+    AssignmentExpression(AssignmentExpression<'a>),
+    Literal(Literal<'a>),
+}
+
+#[derive(Debug, Clone, PartialEq)]
 pub struct VariableDeclaration<'a> {
+    pub typ: &'a str,
     pub id: Identifier<'a>,
-    pub init: Option<Expression<'a>>,
+    pub init: Option<VariableInitializer<'a>>,
 }
 
 #[derive(Debug, Clone, PartialEq)]

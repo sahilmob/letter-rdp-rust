@@ -49,13 +49,78 @@ impl<'a> Parser<'a> {
     // : ExpressionStatement
     // | BlockStatement
     // | EmptyStatement
-    // | EmptyStatement
+    // | VariableStatement
     // ;
     fn statement(&mut self) -> Statement<'a> {
         match self.lookahead.as_ref().unwrap().typ {
             ";" => self.empty_statement(),
             "{" => self.block_statement(),
+            "let" => self.variable_statement(),
             _ => self.expression_statement(),
+        }
+    }
+
+    // VariableStatement
+    //     : "let" VariableDeclarationList ";"
+    //     ;
+    fn variable_statement(&mut self) -> Statement<'a> {
+        self.eat("let");
+        let declarations = self.variable_declarations_list();
+        self.eat(";");
+
+        return Statement::VariableStatement(VariableStatement {
+            typ: "VariableStatement",
+            declarations,
+        });
+    }
+
+    // VariableDeclarationList
+    //  : VariableDeclaration
+    //  | VariableDeclarationList VariableDeclaration
+    //  ;
+    fn variable_declarations_list(&mut self) -> Vec<VariableDeclaration<'a>> {
+        let mut declarations = Vec::new();
+
+        loop {
+            declarations.push(self.variable_declaration());
+            if self.lookahead.clone().unwrap().typ != "," {
+                break;
+            }
+            self.eat(",");
+        }
+
+        return declarations;
+    }
+
+    // VariableDeclaration
+    //  : Identifier OptVariableInitializer
+    //  ;
+
+    fn variable_declaration(&mut self) -> VariableDeclaration<'a> {
+        let id = self.identifier();
+        let lookahead_type = self.lookahead.clone().unwrap().typ;
+
+        let init = match lookahead_type {
+            ";" => None,
+            "," => None,
+            _ => Some(self.variable_initializer()),
+        };
+        return VariableDeclaration {
+            typ: "VariableDeclaration",
+            id,
+            init,
+        };
+    }
+
+    // VariableInitializer
+    //  : SIMPLE_ASSIGN AssignmentExpression
+    //  ;
+    fn variable_initializer(&mut self) -> VariableInitializer<'a> {
+        self.eat("SIMPLE_ASSIGN");
+        match self.assignment_expression() {
+            Expression::Literal(id) => VariableInitializer::Literal(id),
+            Expression::AssignmentExpression(ae) => VariableInitializer::AssignmentExpression(ae),
+            _ => panic!("Unexpected expression, expected assignment expression."),
         }
     }
 
@@ -140,20 +205,20 @@ impl<'a> Parser<'a> {
     // : Identifier
     // ;
     fn left_hand_side_expression(&mut self) -> Expression<'a> {
-        return self.identifier();
+        return Expression::LeftHandSideExpression(LeftHandSideExpression::Identifier(
+            self.identifier(),
+        ));
     }
 
     // Identifier
     // : IDENTIFIER
     // ;
-    fn identifier(&mut self) -> Expression<'a> {
+    fn identifier(&mut self) -> Identifier<'a> {
         let name = self.eat("IDENTIFIER").clone().value;
-        return Expression::LeftHandSideExpression(LeftHandSideExpression::Identifier({
-            Identifier {
-                typ: "Identifier",
-                name: name,
-            }
-        }));
+        return Identifier {
+            typ: "Identifier",
+            name: name,
+        };
     }
 
     fn is_assignment_operator(&self, token_type: &str) -> bool {
@@ -214,25 +279,6 @@ impl<'a> Parser<'a> {
 
         return left;
     }
-
-    // // Generic binary expression
-    // fn _binary_expression(&self, builder_name: &str, operator_token: &str) {
-    //     let mut left = self.[builder_name]();
-
-    //     while self.lookahead.as_ref().unwrap().typ == "MULTIPLICATIVE_OPERATOR" {
-    //         let operator = self.eat("MULTIPLICATIVE_OPERATOR").value;
-    //         let right = self.primary_expression();
-
-    //         left = Expression::BinaryExpression(BinaryExpression {
-    //             typ: "BinaryExpression",
-    //             operator: operator,
-    //             left: Box::new(left),
-    //             right: Box::new(right),
-    //         });
-    //     }
-
-    //     return left;
-    // }
 
     //  PrimaryExpression
     // : Literal
