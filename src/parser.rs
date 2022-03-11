@@ -288,7 +288,7 @@ impl<'a> Parser<'a> {
     fn primary_expression(&mut self) -> Expression<'a> {
         let token = &self.lookahead;
         if self.is_literal(self.lookahead.as_ref().unwrap().typ) {
-            return self.literal();
+            return Expression::Literal(self.literal());
         }
         match token {
             Some(t) => {
@@ -321,47 +321,43 @@ impl<'a> Parser<'a> {
     // : NumericLiteral
     // | StringLiteral
     // :
-    fn literal(&mut self) -> Expression<'a> {
+    fn literal(&mut self) -> Literal<'a> {
         let token = &self.lookahead;
 
-        match token {
-            Some(t) => {
-                if t.typ == "NUMBER" {
-                    return self.numeric_literal();
-                } else if t.typ == "STRING" {
-                    return self.string_literal();
-                } else {
-                    panic!("Unsupported token type {}", t.typ);
-                }
+        let literal = if let Some(t) = token {
+            match t.typ {
+                "NUMBER" => Literal::NumericLiteral(self.numeric_literal()),
+                "STRING" => Literal::StringLiteral(self.string_literal()),
+                _ => panic!("Unsupported Literal type {}", t.typ),
             }
-            None => {
-                panic!("Unexpected end of file");
-            }
-        }
+        } else {
+            panic!("Unexpected end of file")
+        };
+        return literal;
     }
 
     // NumericLiteral
     //  : STRING
     //  ;
-    fn string_literal(&mut self) -> Expression<'a> {
+    fn string_literal(&mut self) -> StringLiteral<'a> {
         let token: Token = self.eat("STRING");
         let value = token.value;
-        return Expression::Literal(Literal::StringLiteral(StringLiteral {
+        return StringLiteral {
             typ: "StringLiteral",
             value: value[1..value.len() - 1].to_string(),
-        }));
+        };
     }
 
     // NumericLiteral
     //  : NUMBER
     //  ;
-    fn numeric_literal(&mut self) -> Expression<'a> {
+    fn numeric_literal(&mut self) -> NumericLiteral<'a> {
         let token: Token = self.eat("NUMBER");
 
-        return Expression::Literal(Literal::NumericLiteral(NumericLiteral {
+        return NumericLiteral {
             typ: "NumericLiteral",
             value: token.value.parse::<i64>().unwrap(),
-        }));
+        };
     }
 
     fn eat(&mut self, token_type: &str) -> Token<'a> {
