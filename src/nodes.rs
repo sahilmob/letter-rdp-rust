@@ -15,7 +15,23 @@ pub enum Statement<'a> {
     ExpressionStatement(ExpressionStatement<'a>),
     BlockStatement(BlockStatement<'a>),
     VariableStatement(VariableStatement<'a>),
+    IfStatement(IfStatement<'a>),
     EmptyStatement { typ: &'a str },
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct IfStatement<'a> {
+    pub typ: &'a str,
+    pub test: Test<'a>,
+    pub consequent: Box<Statement<'a>>,
+    pub alternate: Option<Box<Statement<'a>>>,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub enum Test<'a> {
+    Literal(Literal<'a>),
+    Identifier(Identifier<'a>),
+    BinaryExpression(BinaryExpression<'a>),
 }
 
 #[derive(Debug, Clone, PartialEq)]

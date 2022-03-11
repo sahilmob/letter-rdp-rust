@@ -50,14 +50,59 @@ impl<'a> Parser<'a> {
     // | BlockStatement
     // | EmptyStatement
     // | VariableStatement
+    // | IfStatement
     // ;
     fn statement(&mut self) -> Statement<'a> {
         match self.lookahead.as_ref().unwrap().typ {
             ";" => self.empty_statement(),
             "{" => self.block_statement(),
             "let" => self.variable_statement(),
+            "if" => self.if_statement(),
             _ => self.expression_statement(),
         }
+    }
+
+    // IfStatement
+    //  : "if" "(" Expression ")" Statement
+    //  : "if" "(" Expression ")" Statement "else" Statement
+    //  ;
+
+    fn if_statement(&mut self) -> Statement<'a> {
+        self.eat("if");
+        self.eat("(");
+        let test = if self.lookahead.clone().unwrap().typ == "IDENTIFIER" {
+            Test::Identifier(self.identifier())
+        } else {
+            match self.expression() {
+                Expression::Literal(lt) => match lt {
+                    Literal::StringLiteral(sl) => {
+                        Test::Literal(Literal::StringLiteral(StringLiteral { ..sl }))
+                    }
+                    Literal::NumericLiteral(nl) => {
+                        Test::Literal(Literal::NumericLiteral(NumericLiteral { ..nl }))
+                    }
+                },
+                Expression::BinaryExpression(bxp) => {
+                    Test::BinaryExpression(BinaryExpression { ..bxp })
+                }
+                _ => panic!("Unexpected test expression"),
+            }
+        };
+
+        self.eat(")");
+        let consequent = Box::new(self.statement());
+        let mut alternate = None;
+        if !self.lookahead.is_none() && self.lookahead.clone().unwrap().typ == "else" {
+            self.eat("else");
+            alternate = Some(Box::new(self.statement()));
+        }
+
+        return Statement::IfStatement(IfStatement {
+            typ: "IfStatement",
+            test,
+            consequent,
+            alternate,
+        });
     }
 
     // VariableStatement
@@ -172,11 +217,11 @@ impl<'a> Parser<'a> {
     }
 
     // AssignmentExpression
-    // : AdditiveExpression
+    // : RelationalExpression
     // | LeftHandSideExpression AssignmentOperator AssignmentExpression
     // ;
     fn assignment_expression(&mut self) -> Expression<'a> {
-        let left = self.additive_expression();
+        let left = self.relational_expression();
 
         if !self.is_assignment_operator(self.lookahead.as_ref().unwrap().typ) {
             return left;
@@ -189,6 +234,29 @@ impl<'a> Parser<'a> {
             right: Box::new(self.assignment_expression()),
         });
     }
+
+    // RelationalExpression
+    // : AdditiveExpression
+    // : AdditiveExpression RELATIONAL_OPERATOR RelationalExpression
+    // ;
+    fn relational_expression(&mut self) -> Expression<'a> {
+        let mut left = self.additive_expression();
+
+        while self.lookahead.as_ref().unwrap().typ == "RELATIONAL_OPERATOR" {
+            let operator = self.eat("RELATIONAL_OPERATOR").value;
+            let right = self.additive_expression();
+
+            left = Expression::BinaryExpression(BinaryExpression {
+                typ: "BinaryExpression",
+                operator: operator,
+                left: Box::new(left),
+                right: Box::new(right),
+            });
+        }
+
+        return left;
+    }
+
     fn check_valid_assignment_target(&self, node: Expression<'a>) -> Identifier<'a> {
         match node {
             Expression::LeftHandSideExpression(lhse) => match lhse {
