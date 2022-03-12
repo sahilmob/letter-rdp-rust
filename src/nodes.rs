@@ -69,6 +69,7 @@ pub struct BlockStatement<'a> {
 pub enum Expression<'a> {
     Literal(Literal<'a>),
     BinaryExpression(BinaryExpression<'a>),
+    LogicalExpression(LogicalExpression<'a>),
     AssignmentExpression(AssignmentExpression<'a>),
     LeftHandSideExpression(LeftHandSideExpression<'a>),
 }
@@ -85,11 +86,20 @@ pub struct BinaryExpression<'a> {
     pub left: Box<Expression<'a>>,
     pub right: Box<Expression<'a>>,
 }
+#[derive(Debug, Clone, PartialEq)]
+pub struct LogicalExpression<'a> {
+    pub typ: &'a str,
+    pub operator: String,
+    pub left: Box<Expression<'a>>,
+    pub right: Box<Expression<'a>>,
+}
 
 #[derive(Debug, Clone, PartialEq)]
 pub enum Literal<'a> {
     NumericLiteral(NumericLiteral<'a>),
     StringLiteral(StringLiteral<'a>),
+    BooleanLiteral(BooleanLiteral<'a>),
+    NullLiteral(NullLiteral<'a>),
 }
 
 #[derive(Debug, Clone, PartialEq)]
@@ -115,4 +125,14 @@ pub struct NumericLiteral<'a> {
 pub struct StringLiteral<'a> {
     pub typ: &'a str,
     pub value: String,
+}
+#[derive(Debug, Clone, PartialEq)]
+pub struct BooleanLiteral<'a> {
+    pub typ: &'a str,
+    pub value: bool,
+}
+
+#[derive(Debug, Clone, PartialEq)]
+pub struct NullLiteral<'a> {
+    pub typ: &'a str,
 }

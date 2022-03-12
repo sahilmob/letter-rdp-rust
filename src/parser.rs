@@ -81,6 +81,12 @@ impl<'a> Parser<'a> {
                     Literal::NumericLiteral(nl) => {
                         Test::Literal(Literal::NumericLiteral(NumericLiteral { ..nl }))
                     }
+                    Literal::BooleanLiteral(bl) => {
+                        Test::Literal(Literal::BooleanLiteral(BooleanLiteral { ..bl }))
+                    }
+                    Literal::NullLiteral(nl) => {
+                        Test::Literal(Literal::NullLiteral(NullLiteral { ..nl }))
+                    }
                 },
                 Expression::BinaryExpression(bxp) => {
                     Test::BinaryExpression(BinaryExpression { ..bxp })
@@ -217,11 +223,11 @@ impl<'a> Parser<'a> {
     }
 
     // AssignmentExpression
-    // : RelationalExpression
+    // : LogicalORExpression
     // | LeftHandSideExpression AssignmentOperator AssignmentExpression
     // ;
     fn assignment_expression(&mut self) -> Expression<'a> {
-        let left = self.relational_expression();
+        let left = self.logical_or_expression();
 
         if !self.is_assignment_operator(self.lookahead.as_ref().unwrap().typ) {
             return left;
@@ -233,6 +239,28 @@ impl<'a> Parser<'a> {
             left: self.check_valid_assignment_target(left),
             right: Box::new(self.assignment_expression()),
         });
+    }
+
+    // EqualityExpression
+    //  : RelationalExpression EQUALITY_OPERATOR EqualityExpression
+    //  | RelationalExpression
+    //  ;
+    fn equality_expression(&mut self) -> Expression<'a> {
+        let mut left = self.relational_expression();
+
+        while self.lookahead.as_ref().unwrap().typ == "EQUALITY_OPERATOR" {
+            let operator = self.eat("EQUALITY_OPERATOR").value;
+            let right = self.relational_expression();
+
+            left = Expression::BinaryExpression(BinaryExpression {
+                typ: "BinaryExpression",
+                operator: operator,
+                left: Box::new(left),
+                right: Box::new(right),
+            });
+        }
+
+        return left;
     }
 
     // RelationalExpression
@@ -302,6 +330,42 @@ impl<'a> Parser<'a> {
         return self.eat("COMPLEX_ASSIGN");
     }
 
+    fn logical_and_expression(&mut self) -> Expression<'a> {
+        let mut left = self.equality_expression();
+
+        while self.lookahead.as_ref().unwrap().typ == "LOGICAL_AND" {
+            let operator = self.eat("LOGICAL_AND").value;
+            let right = self.equality_expression();
+
+            left = Expression::LogicalExpression(LogicalExpression {
+                typ: "LogicalExpression",
+                operator: operator,
+                left: Box::new(left),
+                right: Box::new(right),
+            });
+        }
+
+        return left;
+    }
+
+    fn logical_or_expression(&mut self) -> Expression<'a> {
+        let mut left = self.logical_and_expression();
+
+        while self.lookahead.as_ref().unwrap().typ == "LOGICAL_OR" {
+            let operator = self.eat("LOGICAL_OR").value;
+            let right = self.logical_and_expression();
+
+            left = Expression::LogicalExpression(LogicalExpression {
+                typ: "LogicalExpression",
+                operator: operator,
+                left: Box::new(left),
+                right: Box::new(right),
+            });
+        }
+
+        return left;
+    }
+
     // AdditiveExpression
     // : MultiplicativeExpression
     // | AdditiveExpression ADDITIVE_OPERATOR Literal
@@ -369,7 +433,11 @@ impl<'a> Parser<'a> {
     }
 
     fn is_literal(&self, token_type: &str) -> bool {
-        return token_type == "NUMBER" || token_type == "STRING";
+        return token_type == "NUMBER"
+            || token_type == "STRING"
+            || token_type == "true"
+            || token_type == "false"
+            || token_type == "null";
     }
 
     // ParenthesizedExpression
@@ -386,6 +454,8 @@ impl<'a> Parser<'a> {
     // Literal
     // : NumericLiteral
     // | StringLiteral
+    // | BooleanLiteral
+    // | NullLiteral
     // :
     fn literal(&mut self) -> Literal<'a> {
         let token = &self.lookahead;
@@ -394,12 +464,35 @@ impl<'a> Parser<'a> {
             match t.typ {
                 "NUMBER" => Literal::NumericLiteral(self.numeric_literal()),
                 "STRING" => Literal::StringLiteral(self.string_literal()),
+                "true" => Literal::BooleanLiteral(self.boolean_literal(true)),
+                "false" => Literal::BooleanLiteral(self.boolean_literal(false)),
+                "null" => Literal::NullLiteral(self.null_literal()),
                 _ => panic!("Unsupported Literal type {}", t.typ),
             }
         } else {
             panic!("Unexpected end of file")
         };
         return literal;
+    }
+
+    fn boolean_literal(&mut self, value: bool) -> BooleanLiteral<'a> {
+        if value {
+            self.eat("true");
+            return BooleanLiteral {
+                typ: "BooleanLiteral",
+                value: true,
+            };
+        } else {
+            self.eat("false");
+            return BooleanLiteral {
+                typ: "BooleanLiteral",
+                value: false,
+            };
+        }
+    }
+
+    fn null_literal(&self) -> NullLiteral<'a> {
+        return NullLiteral { typ: "NullLiteral" };
     }
 
     // NumericLiteral

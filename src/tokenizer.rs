@@ -1,7 +1,7 @@
 use super::nodes::*;
 use regex::Regex;
 
-const SPEC: [(&str, &str); 21] = [
+const SPEC: [(&str, &str); 27] = [
     (r"^\s+", "WHITESPACE"),
     (r"^//.*", "COMMENT"),
     (r"^/*[\s\S]*?*/.*", "COMMENT"),
@@ -14,13 +14,19 @@ const SPEC: [(&str, &str); 21] = [
     (r"^\blet\b", "let"),
     (r"^\bif\b", "if"),
     (r"^\belse\b", "else"),
+    (r"^\btrue\b", "true"),
+    (r"^\bfalse\b", "false"),
+    (r"^\bnull\b", "null"),
     (r"^\d+", "NUMBER"),
     (r"^\w+", "IDENTIFIER"),
+    (r"^[=!]=", "EQUALITY_OPERATOR"),
     (r"^=", "SIMPLE_ASSIGN"),
     (r"^[\*/\+\-]=", "COMPLEX_ASSIGN"),
     (r"^[+\-]", "ADDITIVE_OPERATOR"),
     (r"^[*\\/]", "MULTIPLICATIVE_OPERATOR"),
     (r"^[><]=?", "RELATIONAL_OPERATOR"),
+    (r"^&&", "LOGICAL_AND"),
+    (r"^\|\|", "LOGICAL_OR"),
     (r#"^"[^"]*""#, "STRING"),
     (r#"^'[^']*'"#, "STRING"),
 ];
